@@ -1,0 +1,30 @@
+# Blender Probe Generated Stub for Blender 5.0.1
+# noinspection PyPep8Naming
+# noinspection PyUnresolvedReferences
+# noqa: N801
+# pylint: disable=invalid-name
+
+import sys
+import typing
+from typing import Any, Optional, Union, Sequence, Callable, Iterator
+from .bpy_prop_collection import bpy_prop_collection
+
+from .bpy_struct import bpy_struct
+from .Attribute import Attribute
+from .AttributeGroupGreasePencilDrawing import AttributeGroupGreasePencilDrawing
+from .IntAttributeValue import IntAttributeValue
+class GreasePencilDrawing(bpy_struct):
+    type: str
+    user_count: int
+    curve_offsets: bpy_prop_collection['IntAttributeValue']
+    attributes: 'AttributeGroupGreasePencilDrawing'
+    color_attributes: 'AttributeGroupGreasePencilDrawing'
+    def add_strokes(self, *args, **kwargs) -> Any: ...
+    def remove_strokes(self, *args, **kwargs) -> Any: ...
+    def resize_strokes(self, *args, **kwargs) -> Any: ...
+    def reorder_strokes(self, *args, **kwargs) -> Any: ...
+    def set_types(self, *args, **kwargs) -> Any: ...
+    def tag_positions_changed(self, *args, **kwargs) -> Any: ...
+    def vertex_group_assign(self, *args, **kwargs) -> Any: ...
+    def vertex_group_remove(self, *args, **kwargs) -> Any: ...
+    def set_vertex_weights(self, *args, **kwargs) -> Any: ...

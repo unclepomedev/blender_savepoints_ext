@@ -1,0 +1,28 @@
+[project]
+name = "savepoints_ext"
+version = "0.0.1"
+description = "Blender Addon: savepoints_ext"
+authors = [
+    {name = "unclepomedev"}
+]
+requires-python = ">=3.11"
+dependencies = ["pip"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.11",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.uv]
+package = true
