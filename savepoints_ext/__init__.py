@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import sys
-import importlib
 from pathlib import Path
+
 import bpy
 
 _local_core = None
 _core_available = False
+_injected_sys_paths = []
 
 _vendor_path = Path(__file__).parent.parent / "vendor"
 _vendor_core_path = _vendor_path / "savepoints"
@@ -17,17 +18,19 @@ if (_vendor_core_path / "__init__.py").exists():
     _wheels_path = _vendor_core_path / "wheels"
     if _wheels_path.exists():
         for wheel_file in _wheels_path.glob("*.whl"):
-            if str(wheel_file) not in sys.path:
-                sys.path.insert(0, str(wheel_file))
+            wheel_str = str(wheel_file)
+            if wheel_str not in sys.path:
+                sys.path.insert(0, wheel_str)
+                _injected_sys_paths.append(wheel_str)
                 print(f"[SavePoints Ext] Loaded dependency wheel: {wheel_file.name}")
 
-    if str(_vendor_path) not in sys.path:
-        sys.path.insert(0, str(_vendor_path))
+    vendor_str = str(_vendor_path)
+    if vendor_str not in sys.path:
+        sys.path.insert(0, vendor_str)
+        _injected_sys_paths.append(vendor_str)
 
     try:
         import savepoints
-
-        importlib.reload(savepoints)
 
         _local_core = savepoints
         _core_available = True
@@ -90,7 +93,13 @@ def register():
                 try:
                     rmod.unregister()
                 except Exception as ex:
-                    print(f"[SavePoints Ext] unregister error: {ex}")
+                    print(f"[SavePoints Ext] ext unregister error: {ex}")
+                    pass
+            if _local_core:
+                try:
+                    _local_core.unregister()
+                except Exception as ex:
+                    print(f"[SavePoints Ext] local_core unregister error: {ex}")
                     pass
             raise
 
@@ -107,3 +116,12 @@ def unregister():
             _local_core.unregister()
         except Exception as ex:
             print(f"[SavePoints Ext] Local Core unregister error: {ex}")
+
+    if _injected_sys_paths:
+        for path in _injected_sys_paths:
+            if path in sys.path:
+                try:
+                    sys.path.remove(path)
+                except ValueError:
+                    pass
+        _injected_sys_paths.clear()
