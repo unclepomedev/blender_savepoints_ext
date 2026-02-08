@@ -7,7 +7,6 @@ import bpy
 
 _local_core = None
 _core_available = False
-_injected_sys_paths = []
 
 _vendor_path = Path(__file__).parent.parent / "vendor"
 _vendor_core_path = _vendor_path / "savepoints"
@@ -21,13 +20,11 @@ if (_vendor_core_path / "__init__.py").exists():
             wheel_str = str(wheel_file)
             if wheel_str not in sys.path:
                 sys.path.insert(0, wheel_str)
-                _injected_sys_paths.append(wheel_str)
                 print(f"[SavePoints Ext] Loaded dependency wheel: {wheel_file.name}")
 
     vendor_str = str(_vendor_path)
     if vendor_str not in sys.path:
         sys.path.insert(0, vendor_str)
-        _injected_sys_paths.append(vendor_str)
 
     try:
         import savepoints
@@ -116,12 +113,3 @@ def unregister():
             _local_core.unregister()
         except Exception as ex:
             print(f"[SavePoints Ext] Local Core unregister error: {ex}")
-
-    if _injected_sys_paths:
-        for path in _injected_sys_paths:
-            if path in sys.path:
-                try:
-                    sys.path.remove(path)
-                except ValueError:
-                    pass
-        _injected_sys_paths.clear()
