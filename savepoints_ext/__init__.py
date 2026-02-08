@@ -5,7 +5,6 @@ import importlib
 from pathlib import Path
 import bpy
 
-
 _local_core = None
 _core_available = False
 
@@ -46,7 +45,6 @@ else:
     except ImportError:
         _core_available = False
 
-
 if _core_available:
     try:
         from . import operators, panel
@@ -77,11 +75,24 @@ def register():
     if _local_core:
         try:
             _local_core.register()
-        except Exception as e:
-            print(f"[SavePoints Ext] Local Core register error: {e}")
+        except Exception as ex:
+            print(f"[SavePoints Ext] Local Core register error: {ex}")
+            raise
 
+    registered = []
     for mod in _ext_modules:
-        mod.register()
+        try:
+            mod.register()
+            registered.append(mod)
+        except Exception as ex:
+            print(f"[SavePoints Ext] Register error in {mod.__name__}: {ex}")
+            for rmod in reversed(registered):
+                try:
+                    rmod.unregister()
+                except Exception as ex:
+                    print(f"[SavePoints Ext] unregister error: {ex}")
+                    pass
+            raise
 
 
 def unregister():
